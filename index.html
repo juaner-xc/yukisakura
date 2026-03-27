@@ -2,15 +2,32 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>日记本</title>
+<title>我的日记</title>
 
 <style>
+/* ===== 背景图片 ===== */
 body {
     font-family: -apple-system;
     max-width: 700px;
     margin: auto;
-    background: linear-gradient(135deg, #e0eafc, #cfdef3);
     padding: 20px;
+    color: white;
+
+    background: url("images/bg.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+/* 遮罩（防止看不清） */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.4);
+    z-index: -1;
 }
 
 /* 标题 */
@@ -18,41 +35,53 @@ h1 {
     text-align: center;
 }
 
+/* 输入区域 */
+.editor {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    padding: 15px;
+    border-radius: 15px;
+}
+
 /* 输入框 */
 textarea {
     width: 100%;
     height: 100px;
-    padding: 12px;
-    border-radius: 12px;
     border: none;
-    margin-bottom: 10px;
+    border-radius: 10px;
+    padding: 10px;
+    outline: none;
 }
 
 /* 按钮 */
 button {
+    margin-top: 10px;
     padding: 8px 15px;
-    margin: 5px;
     border: none;
     border-radius: 10px;
-    cursor: pointer;
-    background: #4CAF50;
+    background: #00c6ff;
     color: white;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-/* 日期标题 */
-.date-group {
-    margin-top: 25px;
+button:hover {
+    transform: scale(1.05);
+}
+
+/* 日期 */
+.date {
+    margin-top: 20px;
     font-weight: bold;
-    font-size: 18px;
 }
 
 /* 日记卡片 */
 .note {
-    background: white;
+    background: rgba(255,255,255,0.9);
+    color: black;
     padding: 15px;
     margin: 10px 0;
     border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     transition: 0.3s;
 }
 
@@ -68,7 +97,9 @@ button {
 
 /* 删除按钮 */
 .delete {
-    background: #ff4d4d;
+    background: red;
+    color: white;
+    margin-top: 5px;
 }
 </style>
 
@@ -76,20 +107,19 @@ button {
 
 <body>
 
-<h1>📖 我的日记</h1>
+<h1>？？ 写点啥</h1>
 
-<textarea id="content" placeholder="写点今天的事情..."></textarea>
-<br>
-<button onclick="addNote()">➕ 保存</button>
-
-<hr>
+<div class="editor">
+    <textarea id="content" placeholder="今天发生了什么..."></textarea>
+    <button onclick="addNote()">保存日记</button>
+</div>
 
 <div id="list"></div>
 
 <script>
 let notes = JSON.parse(localStorage.getItem("notes") || "[]");
 
-// 获取日期
+// 日期
 function getDate() {
     const d = new Date();
     return d.getFullYear() + "-" +
@@ -97,13 +127,12 @@ function getDate() {
         String(d.getDate()).padStart(2,'0');
 }
 
-// 获取时间
+// 时间
 function getTime() {
-    const d = new Date();
-    return d.toLocaleTimeString();
+    return new Date().toLocaleTimeString();
 }
 
-// 保存
+// 添加
 function addNote() {
     const text = document.getElementById("content").value;
     if (!text) return;
@@ -126,7 +155,7 @@ function deleteNote(index) {
     render();
 }
 
-// 渲染（按日期分组🔥）
+// 渲染（按日期分组）
 function render() {
     let html = "";
     let lastDate = "";
@@ -134,7 +163,7 @@ function render() {
     notes.forEach((n, i) => {
 
         if (n.date !== lastDate) {
-            html += `<div class="date-group">📅 ${n.date}</div>`;
+            html += `<div class="date">📅 ${n.date}</div>`;
             lastDate = n.date;
         }
 
