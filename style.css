@@ -1,0 +1,47 @@
+body {
+    font-family: -apple-system;
+    max-width: 900px;
+    margin: auto;
+    background: #f6f6f6;
+    transition: 0.3s;
+}
+
+.dark {
+    background: #121212;
+    color: #eee;
+}
+
+.post {
+    background: white;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.post:hover {
+    transform: translateY(-5px);
+}
+
+.dark .post {
+    background: #1e1e1e;
+}
+
+.tag {
+    display: inline-block;
+    background: #e0e0e0;
+    padding: 3px 8px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dark .tag {
+    background: #333;
+}
+
+#search {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}

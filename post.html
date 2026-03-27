@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>文章</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<div id="content"></div>
+
+<script>
+const urlParams = new URLSearchParams(location.search);
+const id = urlParams.get('id');
+
+fetch(`posts/${id}.md`)
+.then(res => res.text())
+.then(md => {
+    document.getElementById('content').innerHTML = marked.parse(md);
+});
+</script>
+
+</body>
+</html>
