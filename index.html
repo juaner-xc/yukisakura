@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <title>博客</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>我的日记</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>我的博客</h1>
+<!-- 粒子背景 -->
+<div id="particles-js"></div>
 
-<button onclick="toggleDark()">🌙 夜间模式</button>
+<h1>📖 我的日记</h1>
 
-<input id="search" placeholder="搜索文章..." oninput="searchPost()">
+<input id="search" placeholder="搜索日记..." oninput="searchDiary()">
 
-<div id="tags"></div>
 <div id="posts"></div>
-<div id="pagination"></div>
+
+<!-- 夜间按钮 -->
+<button id="darkBtn" onclick="toggleDark()">🌙</button>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js"></script>
 <script src="script.js"></script>
 
 </body>

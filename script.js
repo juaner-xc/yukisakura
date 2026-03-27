@@ -1,95 +1,86 @@
-let allPosts = [];
-let filteredPosts = [];
-let currentPage = 1;
-const perPage = 2;
-let currentTag = null;
+let files = [
+    "posts/2026-03-27.md",
+    "posts/2026-03-28.md"
+];
 
-fetch("posts.json")
-    .then(res => res.json())
-    .then(data => {
-        allPosts = data;
-        filteredPosts = data;
-        renderTags();
-        loadPosts();
-    });
+let allData = [];
 
-function loadPosts() {
-    const start = (currentPage - 1) * perPage;
-    const end = start + perPage;
-
-    const pagePosts = filteredPosts.slice(start, end);
-
-    document.getElementById("posts").innerHTML = "";
-
-    pagePosts.forEach(post => {
-        fetch(post.file)
-            .then(res => res.text())
+// 加载日记
+function loadAll() {
+    files.forEach(f => {
+        fetch(f)
+            .then(r => r.text())
             .then(md => {
-                const html = marked.parse(md);
-
-                const tagsHtml = post.tags.map(t =>
-                    `<span class="tag" onclick="filterTag('${t}')">${t}</span>`
-                ).join("");
-
-                document.getElementById("posts").innerHTML += `
-                    <div class="post">
-                        <h2>${post.title}</h2>
-                        ${tagsHtml}
-                        ${html}
-                    </div>
-                `;
+                allData.push({
+                    file: f,
+                    text: md
+                });
+                render(allData);
             });
     });
-
-    renderPagination();
 }
 
-function renderPagination() {
-    const totalPages = Math.ceil(filteredPosts.length / perPage);
+// 渲染列表（带动画）
+function render(data) {
     let html = "";
+    data.forEach((d, i) => {
+        const preview = d.text.split("\n").slice(0,3).join("\n");
 
-    for (let i = 1; i <= totalPages; i++) {
-        html += `<button onclick="goPage(${i})">${i}</button>`;
-    }
-
-    document.getElementById("pagination").innerHTML = html;
+        html += `
+        <div class="post" onclick="openPost(${i})">
+            ${marked.parse(preview)}
+        </div>`;
+    });
+    document.getElementById("posts").innerHTML = html;
 }
 
-function goPage(page) {
-    currentPage = page;
-    loadPosts();
+// 打开全文
+function openPost(index) {
+    const d = allData[index];
+
+    document.getElementById("posts").innerHTML = `
+        <div class="post" style="animation: fadeIn 0.5s;">
+            ${marked.parse(d.text)}
+            <button onclick="back()">⬅ 返回</button>
+        </div>
+    `;
 }
 
+// 返回列表
+function back() {
+    render(allData);
+}
+
+// 搜索
+function searchDiary() {
+    const key = document.getElementById("search").value.toLowerCase();
+
+    const filtered = allData.filter(d =>
+        d.text.toLowerCase().includes(key)
+    );
+
+    render(filtered);
+}
+
+// 夜间模式
 function toggleDark() {
     document.body.classList.toggle("dark");
 }
 
-function renderTags() {
-    let tags = new Set();
-    allPosts.forEach(p => p.tags.forEach(t => tags.add(t)));
+// 粒子背景
+particlesJS("particles-js", {
+  particles: {
+    number: { value: 40 },
+    size: { value: 3 },
+    move: { speed: 0.6 },
+    line_linked: { enable: true, opacity: 0.2 }
+  },
+  interactivity: {
+    events: {
+      onhover: { enable: true, mode: "repulse" }
+    }
+  }
+});
 
-    let html = "<h3>标签：</h3>";
-    tags.forEach(tag => {
-        html += `<span class="tag" onclick="filterTag('${tag}')">${tag}</span>`;
-    });
-
-    document.getElementById("tags").innerHTML = html;
-}
-
-function filterTag(tag) {
-    currentTag = tag;
-    filteredPosts = allPosts.filter(p => p.tags.includes(tag));
-    currentPage = 1;
-    loadPosts();
-}
-
-function searchPost() {
-    const keyword = document.getElementById("search").value.toLowerCase();
-
-    filteredPosts = allPosts.filter(p =>
-        p.title.toLowerCase().includes(keyword)
-    );
-
-    currentPage = 1;
-    loadPosts();
-}
+// 启动
+loadAll();
