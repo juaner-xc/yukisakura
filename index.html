@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>日记本</title>
+
+<style>
+body {
+    font-family: -apple-system;
+    max-width: 700px;
+    margin: auto;
+    background: linear-gradient(135deg, #e0eafc, #cfdef3);
+    padding: 20px;
+}
+
+/* 标题 */
+h1 {
+    text-align: center;
+}
+
+/* 输入框 */
+textarea {
+    width: 100%;
+    height: 100px;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+/* 按钮 */
+button {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+}
+
+/* 日期标题 */
+.date-group {
+    margin-top: 25px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* 日记卡片 */
+.note {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.note:hover {
+    transform: translateY(-5px);
+}
+
+/* 时间 */
+.time {
+    font-size: 12px;
+    color: gray;
+}
+
+/* 删除按钮 */
+.delete {
+    background: #ff4d4d;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>📖 我的日记</h1>
+
+<textarea id="content" placeholder="写点今天的事情..."></textarea>
+<br>
+<button onclick="addNote()">➕ 保存</button>
+
+<hr>
+
+<div id="list"></div>
+
+<script>
+let notes = JSON.parse(localStorage.getItem("notes") || "[]");
+
+// 获取日期
+function getDate() {
+    const d = new Date();
+    return d.getFullYear() + "-" +
+        String(d.getMonth()+1).padStart(2,'0') + "-" +
+        String(d.getDate()).padStart(2,'0');
+}
+
+// 获取时间
+function getTime() {
+    const d = new Date();
+    return d.toLocaleTimeString();
+}
+
+// 保存
+function addNote() {
+    const text = document.getElementById("content").value;
+    if (!text) return;
+
+    notes.unshift({
+        text,
+        date: getDate(),
+        time: getTime()
+    });
+
+    localStorage.setItem("notes", JSON.stringify(notes));
+    document.getElementById("content").value = "";
+    render();
+}
+
+// 删除
+function deleteNote(index) {
+    notes.splice(index, 1);
+    localStorage.setItem("notes", JSON.stringify(notes));
+    render();
+}
+
+// 渲染（按日期分组🔥）
+function render() {
+    let html = "";
+    let lastDate = "";
+
+    notes.forEach((n, i) => {
+
+        if (n.date !== lastDate) {
+            html += `<div class="date-group">📅 ${n.date}</div>`;
+            lastDate = n.date;
+        }
+
+        html += `
+        <div class="note">
+            <div class="time">${n.time}</div>
+            <p>${n.text}</p>
+            <button class="delete" onclick="deleteNote(${i})">删除</button>
+        </div>
+        `;
+    });
+
+    document.getElementById("list").innerHTML = html;
+}
+
+render();
+</script>
+
+</body>
+</html>
